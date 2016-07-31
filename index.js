@@ -107,6 +107,7 @@ function createHarness (conf_) {
     if (conf_.autoclose !== false) {
         results.once('done', function () { results.close() });
     }
+    results.only(onlyTestNumber);
     
     var test = function (name, conf, cb) {
         var t = new Test(name, conf, cb);
@@ -122,8 +123,6 @@ function createHarness (conf_) {
         })(t);
     
         results.push(t);
-        if (t.number === onlyTestNumber)
-            results.only(onlyTestNumber);
             
         return t;
     };
@@ -143,8 +142,15 @@ function createHarness (conf_) {
     test.only = function () {
         if (only) throw new Error('there can only be one only test');
         only = true;
+<<<<<<< 863e0cf1df4d82fc5c19409a4615a9f1192a57b0
         t = test.apply(null, arguments);
         results.only(t);
+=======
+        var t = test.apply(null, arguments);
+        if (!onlyTestNumber) {
+            results.only(t.number);
+        }
+>>>>>>> made style consistent; error out if -n out of range; tests for -n out of range
         return t;
     };
     test._exitCode = 0;
@@ -158,6 +164,7 @@ var onlyTestNumber = false;
 
 function setNumbering (number) {
     Test.showTestNumbers();
-    if (typeof number === "number")
+    if (typeof number === "number") {
         onlyTestNumber = number;
+    }
 }
