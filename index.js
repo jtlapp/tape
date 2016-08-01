@@ -36,6 +36,14 @@ exports = module.exports = (function () {
         return harness.createStream(opts);
     };
     
+    lazyLoad.setNumbering = function () {
+        return getHarness().setNumbering.apply(this, arguments);
+    };
+
+    lazyLoad.onPreTest = function () {
+        return getHarness().onPreTest.apply(this, arguments);
+    };
+    
     lazyLoad.onFinish = function () {
         return getHarness().onFinish.apply(this, arguments);
     };
@@ -79,10 +87,11 @@ function createExitHarness (conf) {
         }
 
         if (!ended) {
-            var only = harness._results._only;
-            for (var i = 0; i < harness._tests.length; i++) {
-                var t = harness._tests[i];
-                if (only && t.number !== only) continue;
+            var results = harness._results;
+            var only = results._only;
+            for (var i = 0; i < results.tests.length; i++) {
+                var t = results.tests[i];
+                if (only && t !== only) continue;
                 t._exit();
             }
         }
@@ -94,7 +103,6 @@ function createExitHarness (conf) {
 }
 
 exports.createHarness = createHarness;
-exports.setNumbering = setNumbering;
 exports.Test = Test;
 exports.test = exports; // tap compat
 exports.test.skip = Test.skip;
@@ -107,11 +115,9 @@ function createHarness (conf_) {
     if (conf_.autoclose !== false) {
         results.once('done', function () { results.close() });
     }
-    results.only(onlyTestNumber);
     
     var test = function (name, conf, cb) {
         var t = new Test(name, conf, cb);
-        test._tests.push(t);
     
         (function inspectCode (st) {
             st.on('test', function sub (st_) {
@@ -128,10 +134,16 @@ function createHarness (conf_) {
     };
     test._results = results;
     
-    test._tests = [];
-    
     test.createStream = function (opts) {
         return results.createStream(opts);
+    };
+    
+    test.setNumbering = function (testNumber) { // TBD: temporary
+        results.setNumbering(testNumber);
+    }
+    
+    test.onPreTest = function (cb) { // cb(title, unscheduled): title_or_null
+        results.onPreTest = cb;
     };
 
     test.onFinish = function (cb) {
@@ -139,13 +151,11 @@ function createHarness (conf_) {
     };
     
     var only = false;
-    test.only = function (name) {
+    test.only = function () {
         if (only) throw new Error('there can only be one only test');
         only = true;
         var t = test.apply(null, arguments);
-        if (!onlyTestNumber) {
-            results.only(t.number);
-        }
+        results.only(t);
         return t;
     };
     test._exitCode = 0;
@@ -153,13 +163,4 @@ function createHarness (conf_) {
     test.close = function () { results.close() };
     
     return test;
-}
-
-var onlyTestNumber = false;
-
-function setNumbering (number) {
-    Test.showTestNumbers();
-    if (typeof number === "number") {
-        onlyTestNumber = number;
-    }
 }
