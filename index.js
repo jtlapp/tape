@@ -88,11 +88,8 @@ function createExitHarness (conf) {
 
         if (!ended) {
             var results = harness._results;
-            var only = results._only;
             for (var i = 0; i < results.tests.length; i++) {
-                var t = results.tests[i];
-                if (only && t !== only) continue;
-                t._exit();
+                results.tests[i]._exit();
             }
         }
         harness.close();
