@@ -34,7 +34,33 @@ if (opts.number !== false) {
     catch(err) {
         tape = require("../"); // assume testing tape module itself
     }
-    tape.setNumbering(opts.number);
+
+    var nextTestNumber = 0;
+    tape.onFilter(function (testName, skipping, skipIt) {
+        ++ nextTestNumber;
+        if (opts.number !== true) {
+            if (nextTestNumber !== opts.number)
+                return null;
+            else if (skipping)
+                exitWithError("test "+ opts.number +" is being skipped");
+        }
+        else if (skipping)
+            return null;
+        return '['+ nextTestNumber +'] '+ testName;
+    });
+    
+    tape.onFinish(function () {
+        if (opts.number !== true) {
+            if (opts.number === 0 || opts.number > nextTestNumber) {
+                exitWithError("test "+ opts.number +" not found");
+            }
+        }
+    });
+
+    function exitWithError(message) {
+        console.log("*** %s ***\n", message);
+        process.exit(1);
+    }
 }
 
 opts._.forEach(function (arg) {
