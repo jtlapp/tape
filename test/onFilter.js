@@ -93,7 +93,53 @@ tap.test('test onFilter skip scheduling', function (assert) {
         t.fail("dummy assertion");
         t.end();
     });
+});
 
+tap.test('test onFilter skip w/ placeholders', function (assert) {
+    assert.plan(1);
+
+    var verify = function (output) {
+        assert.equal(output.toString('utf8'), [
+            'TAP version 13',
+            '# first test +tag',
+            'ok 1 dummy assertion',
+            '# UNTAGGED second test',
+            '# third test +tag',
+            'ok 2 dummy assertion',
+            '',
+            '1..2',
+            '# tests 2',
+            '# pass  2',
+            '',
+            '# ok',
+            ''
+        ].join('\n'));
+    };
+
+    var tapeTest = test.createHarness();
+    tapeTest.onFilter(function (testName, skipping, skipIt) {
+        if (!/[+]tag/.test(testName)) {
+            skipIt();
+            return "UNTAGGED "+ testName;
+        }
+        return testName;
+    });
+    tapeTest.createStream().pipe(concat(verify));
+    
+    tapeTest('first test +tag', function (t) {
+        t.pass("dummy assertion");
+        t.end();
+    });
+    
+    tapeTest('second test', function (t) {
+        t.fail("dummy assertion");
+        t.end();
+    });
+
+    tapeTest('third test +tag', function (t) {
+        t.pass("dummy assertion");
+        t.end();
+    });
 });
 
 tap.test('test onFilter only scheduling', function (assert) {
