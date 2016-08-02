@@ -36,12 +36,8 @@ exports = module.exports = (function () {
         return harness.createStream(opts);
     };
     
-    lazyLoad.setNumbering = function () {
-        return getHarness().setNumbering.apply(this, arguments);
-    };
-
-    lazyLoad.onPreTest = function () {
-        return getHarness().onPreTest.apply(this, arguments);
+    lazyLoad.onFilter = function () {
+        return getHarness().onFilter.apply(this, arguments);
     };
     
     lazyLoad.onFinish = function () {
@@ -135,12 +131,8 @@ function createHarness (conf_) {
         return results.createStream(opts);
     };
     
-    test.setNumbering = function (testNumber) { // TBD: temporary
-        results.setNumbering(testNumber);
-    }
-    
-    test.onPreTest = function (cb) { // cb(title, unscheduled): title_or_null
-        results.onPreTest = cb;
+    test.onFilter = function (cb) {
+        results.filter = cb;
     };
 
     test.onFinish = function (cb) {
