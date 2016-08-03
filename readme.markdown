@@ -21,7 +21,7 @@ To use `tapeo`, the tests themselves must specify `var test = require('tapeo')` 
 
 The underlying `tape` module distinguishes between "tests" and "assertions". A test is a named group of assertions that provides a reference to a test `t`. The test invokes assertions on `t`, as in `t.equal(actual, expected)`. The `tapeo` command numbers all the tests independently of the assertions.
 
-For example, here is what it might look like to run `tapeo` on a test file:
+For example, here is what it might look like to run `tapeo test.js`:
 
 ```
 TAP version 13
@@ -38,7 +38,7 @@ ok 6 file found
 
 The bracketed numbers are test numbers. You can run just one test by using its test number in the `-nN` argument.
 
-For example, `tapeo -n2` on the same test file would output the following:
+For example, `tapeo -n2 test.js` would then output the following:
 
 ```
 TAP version 13
