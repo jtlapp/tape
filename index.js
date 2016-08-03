@@ -143,19 +143,8 @@ function createHarness (conf_) {
     test.only = function () {
         if (only) throw new Error('there can only be one only test');
         only = true;
-<<<<<<< 863e0cf1df4d82fc5c19409a4615a9f1192a57b0
-        t = test.apply(null, arguments);
-        results.only(t);
-=======
         var t = test.apply(null, arguments);
-<<<<<<< 321e3ef9ace32c6f96191c93dc2a413e3bb5f628
-        if (!onlyTestNumber) {
-            results.only(t.number);
-        }
->>>>>>> made style consistent; error out if -n out of range; tests for -n out of range
-=======
         results.only(t);
->>>>>>> Based .only on test references; added an onPreTest() hook that implements the -n option
         return t;
     };
     test._exitCode = 0;
