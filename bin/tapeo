@@ -64,11 +64,9 @@ catch(err) {
     }
     catch(err) {
         try {
-            // console.log("##### looking for "+ resolvePath(cwd, "../bin/tapeo"));
             fs.statSync(resolvePath(cwd, "../bin/tapeo"));
         }
         catch(err) {
-            // console.log("##### ERROR "+ err.toString());
             exitWithError("can't find tape or tapeo module");
         }
         tapePath = "..";
