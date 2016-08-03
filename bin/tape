@@ -6,9 +6,10 @@ var parseOpts = require('minimist');
 var glob = require('glob');
 
 var opts = parseOpts(process.argv.slice(2), {
-        alias: { r: 'require' },
+        alias: { r: 'require', n: 'number' },
         string: 'require',
-        default: { r: [] }
+        boolean: 'n',
+        default: { r: [], n: false }
     });
 
 var cwd = process.cwd();
@@ -24,6 +25,43 @@ opts.require.forEach(function(module) {
       require(resolveModule(module, { basedir: cwd }));
     }
 });
+
+if (opts.number !== false) {
+    var tape;
+    try {
+        tape = require(resolveModule("tape", { basedir: cwd }));
+    }
+    catch(err) {
+        tape = require("../"); // assume testing tape module itself
+    }
+
+    var nextTestNumber = 0;
+    tape.onFilter(function (testName, skipping, skipIt) {
+        ++ nextTestNumber;
+        if (opts.number !== true) {
+            if (nextTestNumber !== opts.number)
+                return null;
+            else if (skipping)
+                exitWithError("test "+ opts.number +" is being skipped");
+        }
+        else if (skipping)
+            return null;
+        return '['+ nextTestNumber +'] '+ testName;
+    });
+    
+    tape.onFinish(function () {
+        if (opts.number !== true) {
+            if (opts.number === 0 || opts.number > nextTestNumber) {
+                exitWithError("test "+ opts.number +" not found");
+            }
+        }
+    });
+
+    function exitWithError(message) {
+        console.log("*** %s ***\n", message);
+        process.exit(1);
+    }
+}
 
 opts._.forEach(function (arg) {
     glob(arg, function (err, files) {

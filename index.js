@@ -36,6 +36,10 @@ exports = module.exports = (function () {
         return harness.createStream(opts);
     };
     
+    lazyLoad.onFilter = function () {
+        return getHarness().onFilter.apply(this, arguments);
+    };
+    
     lazyLoad.onFinish = function () {
         return getHarness().onFinish.apply(this, arguments);
     };
@@ -79,11 +83,9 @@ function createExitHarness (conf) {
         }
 
         if (!ended) {
-            var only = harness._results._only;
-            for (var i = 0; i < harness._tests.length; i++) {
-                var t = harness._tests[i];
-                if (only && t.name !== only) continue;
-                t._exit();
+            var results = harness._results;
+            for (var i = 0; i < results.tests.length; i++) {
+                results.tests[i]._exit();
             }
         }
         harness.close();
@@ -109,8 +111,7 @@ function createHarness (conf_) {
     
     var test = function (name, conf, cb) {
         var t = new Test(name, conf, cb);
-        test._tests.push(t);
-        
+    
         (function inspectCode (st) {
             st.on('test', function sub (st_) {
                 inspectCode(st_);
@@ -119,16 +120,19 @@ function createHarness (conf_) {
                 if (!r.ok && typeof r !== 'string') test._exitCode = 1
             });
         })(t);
-        
+    
         results.push(t);
+            
         return t;
     };
     test._results = results;
     
-    test._tests = [];
-    
     test.createStream = function (opts) {
         return results.createStream(opts);
+    };
+    
+    test.onFilter = function (cb) {
+        results.filter = cb;
     };
 
     test.onFinish = function (cb) {
@@ -136,11 +140,12 @@ function createHarness (conf_) {
     };
     
     var only = false;
-    test.only = function (name) {
+    test.only = function () {
         if (only) throw new Error('there can only be one only test');
-        results.only(name);
         only = true;
-        return test.apply(null, arguments);
+        var t = test.apply(null, arguments);
+        results.only(t);
+        return t;
     };
     test._exitCode = 0;
     
