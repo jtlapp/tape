@@ -10,13 +10,13 @@ var glob = require('glob');
 //// CONFIGURATION ////////////////////////////////////////////////////////////
 
 var opts = parseOpts(process.argv.slice(2), {
-        alias: { r: 'require', n: 'onlyTestNumber' },
+        alias: { r: 'require', n: 'selectedTest' },
         string: 'require',
         boolean: 'n',
         default: { r: [], n: false }
     });
 
-if (opts.onlyTestNumber === true) {
+if (opts.selectedTest === true) {
     exitWithError("-n option requires a test number (e.g. -n42)");
 }
 
@@ -34,16 +34,55 @@ opts.require.forEach(function(module) {
     }
 });
 
+//// STATE ////////////////////////////////////////////////////////////////////
+
+var testNumber = 0; // number of test currently running 
+
 //// INSTALLATION /////////////////////////////////////////////////////////////
 
-// TBD: should be able to use just resolveModule() after separating tapen
 var tape;
 try {
     tape = require(resolveModule("tape", { basedir: cwd }));
+    if (typeof tape.onFilter === 'undefined')
+        throw new Error("retry with tapeo module");
+    try {
+        require(resolveModule("tapeo", { basedir: cwd }));
+        exitWithError(
+                "tape and tapeo can't both be installed in the same module");
+    }
+    catch(err) {
+        // desired result; ignore
+    }
 }
 catch(err) {
-    tape = require("../"); // assume testing tape module itself
+    try {
+        tape = require(resolveModule("tapeo", { basedir: cwd }));
+    }
+    catch(err) {
+        tape = require("../"); // assume testing tapeo module itself
+    }
 }
+
+tape.onFilter(function (testName, skipping, skipIt) {
+    ++ testNumber;
+    if (opts.selectedTest !== false) {
+        if (testNumber !== opts.selectedTest)
+            return null;
+        else if (skipping)
+            exitWithError("test "+ opts.selectedTest +" is being skipped");
+    }
+    else if (skipping)
+        return null;
+    return '['+ testNumber +'] '+ testName;
+});
+
+tape.onFinish(function () {
+    if (opts.selectedTest !== false) {
+        if (opts.selectedTest === 0 || opts.selectedTest > testNumber) {
+            exitWithError("test "+ opts.selectedTest +" not found");
+        }
+    }
+});
 
 //// RUN TESTS ////////////////////////////////////////////////////////////////
 
@@ -57,8 +96,7 @@ opts._.forEach(function (arg) {
 
 //// SUPPORT FUNCTIONS ////////////////////////////////////////////////////////
 
-exitWithError(message) {
-    // should only call this method prior to running any tests
+function exitWithError(message) {
     console.log("*** %s ***\n", message);
     process.exit(1);
 }

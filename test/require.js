@@ -18,9 +18,9 @@ tap.test('requiring a single module', function (t) {
         });
         t.same(rs, [
             'TAP version 13',
-            'module-a',
+            '[1] module-a',
             { id: 1, ok: true, name: 'loaded module a' },
-            'test-a',
+            '[2] test-a',
             { id: 2, ok: true, name: 'module-a loaded in same context'},
             { id: 3, ok: true, name: 'test ran after module-a was loaded'},
             'tests 3',
@@ -52,14 +52,14 @@ tap.test('requiring multiple modules', function (t) {
         });
         t.same(rs, [
             'TAP version 13',
-            'module-a',
+            '[1] module-a',
             { id: 1, ok: true, name: 'loaded module a' },
-            'module-b',
+            '[2] module-b',
             { id: 2, ok: true, name: 'loaded module b' },
-            'test-a',
+            '[3] test-a',
             { id: 3, ok: true, name: 'module-a loaded in same context'},
             { id: 4, ok: true, name: 'test ran after module-a was loaded'},
-            'test-b',
+            '[4] test-b',
             { id: 5, ok: true, name: 'module-b loaded in same context'},
             { id: 6, ok: true, name: 'test ran after module-b was loaded'},
             'tests 6',
@@ -77,7 +77,7 @@ tap.test('requiring multiple modules', function (t) {
 
 function tape(args) {
   var proc = require('child_process')
-  var bin = __dirname + '/../bin/tape'
+  var bin = __dirname + '/../bin/tapeo'
 
   return proc.spawn(bin, args.split(' '), { cwd: __dirname })
 }

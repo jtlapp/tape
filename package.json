@@ -1,9 +1,9 @@
 {
-  "name": "tape",
-  "version": "4.6.0",
-  "description": "tap-producing test harness for node and browsers",
+  "name": "tapeo",
+  "version": "1.0.0",
+  "description": "tape-based test harness with command line options",
   "main": "index.js",
-  "bin": "./bin/tape",
+  "bin": "./bin/tapeo",
   "directories": {
     "example": "example",
     "test": "test"
@@ -46,20 +46,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/tape.git"
+    "url": "git://github.com/jtlapp/tape.git"
   },
-  "homepage": "https://github.com/substack/tape",
+  "homepage": "https://github.com/jtlapp/tape",
   "keywords": [
     "tap",
     "test",
     "harness",
     "assert",
-    "browser"
+    "browser",
+    "command",
+    "options"
   ],
   "author": {
     "name": "James Halliday",
     "email": "mail@substack.net",
     "url": "http://substack.net"
   },
+  "contributors": [
+    {
+      "name": "Joe Lapp",
+      "email": "arachnojoe@gmail.com",
+      "url": "http://josephtlapp.com"
+    }
+  ],
   "license": "MIT"
 }

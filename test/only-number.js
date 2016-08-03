@@ -1,7 +1,7 @@
 var tap = require('tap');
 var spawn = require('child_process').spawn;
 var trim = require('string.prototype.trim');
-
+/*
 tap.test('numbering for -n argument', function (t) {
     t.plan(2);
     
@@ -36,7 +36,7 @@ tap.test('numbering for -n argument', function (t) {
         t.equal(code, 0);
     });
 });
-
+*/
 tap.test('running only X in -nX argument', function (t) {
     t.plan(2);
     
@@ -146,7 +146,7 @@ tap.test('running -nX where X > number of tests', function (t) {
 
 function tape(args) {
   var proc = require('child_process')
-  var bin = __dirname + '/../bin/tape'
+  var bin = __dirname + '/../bin/tapeo'
 
   return proc.spawn(bin, args.split(' '), { cwd: __dirname })
 }
