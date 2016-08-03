@@ -1,6 +1,6 @@
 {
   "name": "tapeo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "tape-based test harness with command line options",
   "main": "index.js",
   "bin": "./bin/tapeo",
