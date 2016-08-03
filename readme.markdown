@@ -15,7 +15,7 @@ npm install tapeo --save-dev
 - `-nN` - Runs only test number `N`
 - `-s` - Stops after the first test in which assertions fail (coming soon)
 
-To use `tapeo`, the tests themselves must specify `var test = require('tapeo')` until `tape` itself supports the hooks that `tapeo` makes available to `tape`.
+To use `tapeo`, the tests themselves must specify `var test = require('tapeo')` until `tape` supports the hooks that `tapeo` makes available to `tape`.
 
 ### Run a test number (`-nN`)
 
@@ -38,7 +38,7 @@ ok 6 file found
 
 The bracketed numbers are test numbers. You can run just one test by using its test number in the `-nN` argument.
 
-For example, `-n2` on the same test file would output the following:
+For example, `tapeo -n2` on the same test file would output the following:
 
 ```
 TAP version 13
