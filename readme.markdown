@@ -4,6 +4,14 @@
 
 ## Installation
 
+You'll want to install the `tapeo` command globally:
+
+```
+sudo npm install -g tapeo
+```
+
+Then install it in the module you'll be testing:
+
 ```
 npm install tapeo --save-dev
 ```
