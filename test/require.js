@@ -23,7 +23,7 @@ tap.test('requiring a single module', function (t) {
             '[2] test-a',
             { id: 2, ok: true, name: 'module-a loaded in same context'},
             { id: 3, ok: true, name: 'test ran after module-a was loaded'},
-            'tests 3',
+            'assertions 3',
             'pass  3',
             'ok'
         ]);
@@ -62,7 +62,7 @@ tap.test('requiring multiple modules', function (t) {
             '[4] test-b',
             { id: 5, ok: true, name: 'module-b loaded in same context'},
             { id: 6, ok: true, name: 'test ran after module-b was loaded'},
-            'tests 6',
+            'assertions 6',
             'pass  6',
             'ok'
         ]);

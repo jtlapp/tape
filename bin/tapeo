@@ -6,6 +6,7 @@ var resolveModule = require('resolve').sync;
 var resolvePath = require('path').resolve;
 var parseOpts = require('minimist');
 var glob = require('glob');
+var fs = require('fs');
 
 //// CONFIGURATION ////////////////////////////////////////////////////////////
 
@@ -40,11 +41,13 @@ var testNumber = 0; // number of test currently running
 
 //// INSTALLATION /////////////////////////////////////////////////////////////
 
+var tapePath;
 var tape;
 try {
-    tape = require(resolveModule("tape", { basedir: cwd }));
+    tapePath = "tape";
+    tape = require(resolveModule(tapePath, { basedir: cwd }));
     if (typeof tape.onFilter === 'undefined')
-        throw new Error("retry with tapeo module");
+        exitWithError("the installed tape module does not support tapeo");
     try {
         require(resolveModule("tapeo", { basedir: cwd }));
         exitWithError(
@@ -56,10 +59,20 @@ try {
 }
 catch(err) {
     try {
-        tape = require(resolveModule("tapeo", { basedir: cwd }));
+        tapePath = "tapeo";
+        tape = require(resolveModule(tapePath, { basedir: cwd }));
     }
     catch(err) {
-        tape = require("../"); // assume testing tapeo module itself
+        try {
+            // console.log("##### looking for "+ resolvePath(cwd, "../bin/tapeo"));
+            fs.statSync(resolvePath(cwd, "../bin/tapeo"));
+        }
+        catch(err) {
+            // console.log("##### ERROR "+ err.toString());
+            exitWithError("can't find tape or tapeo module");
+        }
+        tapePath = "..";
+        tape = require(tapePath); // assume testing tapeo module itself
     }
 }
 
@@ -83,6 +96,24 @@ tape.onFinish(function () {
         }
     }
 });
+
+// hack to clarify meaning of total count
+var resultsPath = tapePath +"/lib/results.js";
+var Results = require(resolveModule(resultsPath, { basedir: cwd }))
+Results.prototype.close = function () {
+    var self = this;
+    if (self.closed) self._stream.emit('error', new Error('ALREADY CLOSED'));
+    self.closed = true;
+    var write = function (s) { self._stream.queue(s) };
+    
+    write('\n1..' + self.count + '\n');
+    write('# assertions ' + self.count + '\n');
+    write('# pass  ' + self.pass + '\n');
+    if (self.fail) write('# fail  ' + self.fail + '\n')
+    else write('\n# ok\n')
+
+    self._stream.queue(null);
+};
 
 //// RUN TESTS ////////////////////////////////////////////////////////////////
 
