@@ -23,7 +23,7 @@ npm install tapeo --save-dev
 - `-nN` - Runs only test number `N`
 - `-s` - Stops after the first test in which assertions fail (coming soon)
 
-To use `tapeo`, the tests themselves must specify `var test = require('tapeo')` until `tape` supports the hooks that `tapeo` makes available to `tape`.
+To use `tapeo`, the tests themselves must specify `test = require('tapeo')` until `tape` supports the hooks that `tapeo` makes available to `tape`.
 
 ### Run a test number (`-nN`)
 
