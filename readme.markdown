@@ -25,7 +25,8 @@ npm install tapeo --save-dev
 `tapeo` is an alternative to the executable `tape` command that comes with the [`tape` module](https://github.com/substack/tape). This alternative is identical to `tape` except that it also supports the following command line options:
 
 - `-nN` - Runs only test number `N`
-- `-s` - Stops after the first test in which assertions fail (coming soon)
+- `-s` - Stops after the 1st test in which assertions fail
+- `-sN` - Stops after the Nth test in whish assertions fail
 
 To use `tapeo`, the tests themselves must specify `test = require('tapeo')` until `tape` supports the hooks that `tapeo` makes available to `tape`.
 
@@ -63,9 +64,13 @@ It is not possible to use `-n` to run a test that is being skipped via `skip` or
 
 *IMPORTANT*: When using `tapeo` to glob across many test files, the test numbers depend on the order in which the files load. This order should be consistent from run-to-run on the same machine, at least until files are added, deleted, or renamed. Test number order may not be consistent from machine to machine, depending on the file system and the order in which the test files occur in the file system.
 
-### Stop after first failed test (`-s`)
+### Stop after Nth failed test (`-s` or `-sN`)
 
-Not yet implemented. Coming soon.
+The `-s` option tells `tapeo` to stop running tests after the first test that contains at least one failing test assertion. The entire test still runs, but no further tests will run.
+
+The `-sN` option tells `tapeo` to stop running tests after the Nth test that contains at least one failing test assertion.
+
+If a test run aborts in this manner, `tapeo` will still output a summary of the passing and failing assertions that it did run. The last line of the test will be a TAP `Bail out!` notice line, which TAP parsers recognize.
 
 ## Hooks
 
