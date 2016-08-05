@@ -4,7 +4,7 @@
 
 ## Overview
 
-`tapeo` numbers all named tests and has a command line option for specifying the number of a test to run. There is also a command line option for halting the test run after a specified number of failed tests. `tapeo` also provides hooks for preprocessing the set of all tests, for postprocessing each test, and for aborting the test suite with a TAP "Bail out!" notice. 
+`tapeo` numbers all named tests and has a command line option for specifying the number of a test to run. There is also a command line option for halting testing after a specified number of failed tests. `tapeo` provides hooks for preprocessing the set of all tests, for postprocessing each test, and for aborting the test suite with a TAP "Bail out!" notice. 
 
 ## Installation
 
