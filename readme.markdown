@@ -6,7 +6,7 @@
 
 `tapeo` numbers all named tests and has a command line option for specifying the number of a test to run. There is also an option that halts testing after a specified number of failed tests. `tapeo` provides hooks for preprocessing the set of all tests, for postprocessing each test, and for aborting the test suite with a TAP "Bail out!" notice.
 
-*Note: I'll soon be provided a fork of [`faucet`](https://github.com/substack/faucet) that works with `tapeo`, assuming that the `faucet` folks don't accept my tweaks.*
+*I'll be provided a fork of [`faucet`](https://github.com/substack/faucet) that works with `tapeo`, assuming that the `faucet` folks don't accept my tweaks.*
 
 ## Installation
 
@@ -24,7 +24,7 @@ npm install tapeo --save-dev
 
 ## Command Options
 
-`tapeo` is an alternative to the executable `tape` command that comes with the [`tape` module](https://github.com/substack/tape). This alternative is identical to `tape` except that it also supports the following command line options:
+`tapeo` is an alternative to the executable `tape` command that comes with the [`tape` module](https://github.com/substack/tape). This alternative is equivalent to `tape` except that it also supports the following command line options:
 
 - `-nN` - Runs only test number `N`
 - `-s` - Stops after the 1st test in which assertions fail
@@ -62,13 +62,13 @@ ok 1 abort required
 ok 2 check file not found
 ```
 
-It is not possible to use `-n` to run a test that is being skipped via `skip` or for not being the selected `only` test within the set of all run tests. `skip` and `only` reduce the selection of numbered tests available.
+It is not possible to use `-n` to run a test that is skipped via `skip` or that is excluded by `.only` on another test. `skip` and `only` reduce the selection of numbered tests available.
 
 *IMPORTANT*: When using `tapeo` to glob across many test files, the test numbers depend on the order in which the files load. This order should be consistent from run-to-run on the same machine, at least until files are added, deleted, or renamed. Test number order may not be consistent from machine to machine, depending on the file system and the order in which the test files occur in the file system.
 
 ### Stop after Nth failed test (`-s` or `-sN`)
 
-The `-s` option tells `tapeo` to stop running tests after the first test that contains at least one failing test assertion. The entire test still runs, but no further tests will run.
+The `-s` option tells `tapeo` to stop running tests after the first test that contains at least one failing test assertion. The entire test with the failed assertion still runs, but no further tests will run.
 
 The `-sN` option tells `tapeo` to stop running tests after the Nth test that contains at least one failing test assertion.
 
@@ -93,7 +93,7 @@ right before tape is about to print the test summary.
 
 ### tapeo.abort(msg)
 
-The `abort` method halts testing after the current test. Calling it results the output of a summary of all tests that did run, followed by a TAP "Bail out!" notice line. The provided `msg` is tacked onto the notice line to indicate the reason for the abort. This method may be called at any time during testing, including within the onTest hook.
+The `abort` method halts testing after the current test. Calling it produces the output of a summary of all tests that did run, followed by a TAP "Bail out!" notice line. The provided `msg` is tacked onto the notice line to indicate the reason for the abort. This method may be called at any time during testing, including within the onTest hook.
 
 # license
 
