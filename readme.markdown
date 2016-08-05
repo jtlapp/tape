@@ -28,7 +28,7 @@ npm install tapeo --save-dev
 - `-s` - Stops after the 1st test in which assertions fail
 - `-sN` - Stops after the Nth test in whish assertions fail
 
-To use `tapeo`, the tests themselves must specify `test = require('tapeo')` until `tape` supports the hooks that `tapeo` makes available to `tape`.
+To use `tapeo`, the tests themselves must specify `test = require('tapeo')` until `tape` supports the hooks that `tapeo` provides.
 
 ### Run a test number (`-nN`)
 
