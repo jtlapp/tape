@@ -1,6 +1,10 @@
 # tapeo
 
-`tape`-based test harness with command line options
+`tape`-based test harness with command line options and extra hooks
+
+## Overview
+
+`tapeo` numbers all named tests and has a command line option for specifying the number of a test to run. There is also a command line option for halting the test run after a specified number of failed tests. `tapeo` also provides hooks for preprocessing the set of all tests, for postprocessing each test, and for aborting the test suite with a TAP "Bail out!" notice. 
 
 ## Installation
 
@@ -62,6 +66,27 @@ It is not possible to use `-n` to run a test that is being skipped via `skip` or
 ### Stop after first failed test (`-s`)
 
 Not yet implemented. Coming soon.
+
+## Hooks
+
+`tapeo` supports the following hooks:
+
+### tapeo.onStart(fn)
+
+The onStart hook is called before any tape tests have begun running. The callback `fn` is passed an array of test objects. onStart may rename tests via the `t.name` attribute, remove tests from the array, or otherwise validate the tests before allowing the tests to run. The callback may not employ the methods that are available to the test during its run, except for `tapeo.abort()`.
+
+### tapeo.onTest(fn)
+
+The onTest hook is called after a test completes. A test completes when `t.end()` is called or the test has reached the planned assertion count. The callback `fn` is passed a reference to the test object that just completed. The callback may examine the test object for `t.name`, `t.assertCount`, and `t.failCount`. `assertCount` is the number of assertions in the test, and `failCount` is the number of assertions that failed. `t.comment()` and `tapeo.abort()` are also available.
+
+### tapeo.onFinish(fn)
+
+The onFinish hook will get invoked when ALL tape tests have finished
+right before tape is about to print the test summary.
+
+### tapeo.abort(msg)
+
+The `abort` method halts testing after the current test. Calling it results the output of a summary of all tests that did run, followed by a TAP "Bail out!" notice line. The provided `msg` is tacked onto the notice line to indicate the reason for the abort. This method may be called at any time during testing, including within the onTest hook.
 
 # license
 

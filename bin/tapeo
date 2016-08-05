@@ -11,15 +11,30 @@ var fs = require('fs');
 //// CONFIGURATION ////////////////////////////////////////////////////////////
 
 var opts = parseOpts(process.argv.slice(2), {
-        alias: { r: 'require', n: 'selectedTest' },
+        alias: { r: 'require', n: 'selectedTest', s: 'maxFails', h: 'help' },
         string: 'require',
-        boolean: 'n',
-        default: { r: [], n: false }
+        boolean: [ 'n', 's', 'h' ],
+        default: { r: [], n: false, s: false, h: false }
     });
+
+if (opts.help) {
+    console.log("tapeo [options] [files]\n");
+    console.log("options:");
+    console.log("  -nN : run only test number N");
+    console.log("  -s  : stop run after 1st test with failures");
+    console.log("  -sN : stop run after Nth test with failures");
+    console.log("  -h  : this help information\n");
+    process.exit(0);
+}
 
 if (opts.selectedTest === true) {
     exitWithError("-n option requires a test number (e.g. -n42)");
 }
+
+if (opts.maxFails === 0)
+    exitWithError("-s option requires a number > 0");
+if (opts.maxFails === true)
+    opts.maxFails = 1;
 
 var cwd = process.cwd();
 
@@ -37,7 +52,8 @@ opts.require.forEach(function(module) {
 
 //// STATE ////////////////////////////////////////////////////////////////////
 
-var testNumber = 0; // number of test currently running 
+var lastTest; // reference to last test expected to run
+var failedTests = 0; // number of tests so far having > 0 failed assertions
 
 //// INSTALLATION /////////////////////////////////////////////////////////////
 
@@ -46,8 +62,6 @@ var tape;
 try {
     tapePath = "tape";
     tape = require(resolveModule(tapePath, { basedir: cwd }));
-    if (typeof tape.onFilter === 'undefined')
-        exitWithError("the installed tape module does not support tapeo");
     try {
         require(resolveModule("tapeo", { basedir: cwd }));
         exitWithError(
@@ -74,28 +88,48 @@ catch(err) {
     }
 }
 
-tape.onFilter(function (testName, skipping, skipIt) {
-    ++ testNumber;
-    if (opts.selectedTest !== false) {
-        if (testNumber !== opts.selectedTest)
-            return null;
-        else if (skipping)
-            exitWithError("test "+ opts.selectedTest +" is being skipped");
-    }
-    else if (skipping)
-        return null;
-    return '['+ testNumber +'] '+ testName;
-});
+var haveOnStart = (typeof tape.onStart !== 'undefined');
+if (haveOnStart) {
+    tape.onStart(function (tests) {
+        if (tests.length === 0)
+            exitWithError("no tests to run");
 
-tape.onFinish(function () {
-    if (opts.selectedTest !== false) {
-        if (opts.selectedTest === 0 || opts.selectedTest > testNumber) {
-            exitWithError("test "+ opts.selectedTest +" not found");
+        if (opts.selectedTest !== false) {
+            if (opts.selectedTest === 0 || opts.selectedTest > tests.length)
+                exitWithError("test "+ opts.selectedTest +" not found");
         }
-    }
-});
 
-// hack to clarify meaning of total count
+        for (var i=0; i < tests.length; ++i) {
+            lastTest = tests[i];
+            lastTest.name = '['+ (i+1) +'] '+ lastTest.name;
+        }
+
+        if (opts.selectedTest !== false) {
+            if (opts.selectedTest < tests.length) // must splice tail 1st
+                tests.splice(opts.selectedTest);
+            if (opts.selectedTest > 1)
+                tests.splice(0, opts.selectedTest - 1);
+            lastTest = tests[0]; // only one test kept
+        }
+    });
+}
+else if (opts.selectedTest !== false)
+    exitWithError("-n is not available in the tape module");
+
+var haveOnTest = (typeof tape.onTest !== 'undefined');
+if (haveOnStart && haveOnTest) {
+    tape.onTest(function (t) {
+        if (t.failCount && opts.maxFails && ++failedTests === opts.maxFails &&
+                t !== lastTest) {
+            tape.abort("Aborted after "+ opts.maxFails +" failed test(s)");
+        }
+    });
+}
+else if (opts.maxFails)
+    exitWithError("-s is not available in the tape module");
+
+// hack to clarify that total test count is actually total "assertions"
+
 var resultsPath = tapePath +"/lib/results.js";
 var Results = require(resolveModule(resultsPath, { basedir: cwd }))
 Results.prototype.close = function () {
@@ -108,7 +142,9 @@ Results.prototype.close = function () {
     write('# assertions ' + self.count + '\n');
     write('# pass  ' + self.pass + '\n');
     if (self.fail) write('# fail  ' + self.fail + '\n')
-    else write('\n# ok\n')
+    else if (self.bailout === null) write('\n# ok\n')
+    
+    if (self.bailout !== null) write('\nBail out! ' + self.bailout + '\n')
 
     self._stream.queue(null);
 };

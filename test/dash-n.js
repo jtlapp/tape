@@ -19,31 +19,7 @@ tap.test('running only X in -nX argument', function (t) {
         t.same(rs, expectedResult('[2] only -n2 test 2'));
     });
     
-    var ps = tape('-n2 only-number/only-n2.js');
-    ps.stdout.pipe(tc);
-    ps.on('exit', function (code) {
-        t.equal(code, 0);
-    });
-});
-
-tap.test('running only -n1 w/ .only on 2nd', function (t) {
-    t.plan(2);
-    
-    var tc = tap.createConsumer();
-    
-    var rows = [];
-    tc.on('data', function (r) { rows.push(r) });
-    tc.on('end', function () {
-        var rs = rows.map(function (r) {
-            if (r && typeof r === 'object') {
-                return { id : r.id, ok : r.ok, name : trim(r.name) };
-            }
-            else return r;
-        });
-        t.same(rs, expectedResult('[1] test 2 w/ only'));
-    });
-    
-    var ps = tape('-n1 only-number/only2-n1.js');
+    var ps = tape('-n2 dash-n/only-n2.js');
     ps.stdout.pipe(tc);
     ps.on('exit', function (code) {
         t.equal(code, 0);
@@ -64,16 +40,13 @@ tap.test('running only -n2 w/ .only on 2nd', function (t) {
             }
             else return r;
         });
-        t.same(rs, [
-            'TAP version 13',
-            '*** test 2 not found ***'
-        ]);
+        t.same(rs, expectedResult('[2] test 2 w/ only'));
     });
     
-    var ps = tape('-n2 only-number/only2-n1.js');
+    var ps = tape('-n2 dash-n/only2-n1.js');
     ps.stdout.pipe(tc);
     ps.on('exit', function (code) {
-        t.equal(code, 1);
+        t.equal(code, 0);
     });
 });
 
@@ -94,7 +67,7 @@ tap.test('running -nX where X is not in 1st file', function (t) {
         t.same(rs, expectedResult('[5] multi2 test 2'));
     });
     
-    var ps = tape('-n5 only-number/multi1-n5.js only-number/multi2-n5.js');
+    var ps = tape('-n5 dash-n/multi1-n5.js dash-n/multi2-n5.js');
     ps.stdout.pipe(tc);
     ps.on('exit', function (code) {
         t.equal(code, 0);
@@ -147,7 +120,7 @@ function testInvalidNumber(t, n) {
         ]);
     });
     
-    var ps = tape('-n'+ n +' only-number/multi1-n5.js');
+    var ps = tape('-n'+ n +' dash-n/multi1-n5.js');
     ps.stdout.pipe(tc);
     ps.on('exit', function (code) {
         t.equal(code, 1);
