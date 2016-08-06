@@ -2,6 +2,10 @@
 
 `tape`-based test harness with command line options and extra hooks
 
+## IMPORTANT NOTICE
+
+I created this a few days ago as an extension of the [`tape` module](https://github.com/substack/tape), but I'm finding `tape` too fragile a dependency. I already have a much more robust implementation based on the ['tap' module](https://github.com/tapjs/node-tap) and will post it shortly as a new module.
+
 ## Overview
 
 `tapeo` numbers all named tests and has a command line option for specifying the number of a test to run. There is also an option that halts testing after a specified number of failed tests. `tapeo` provides hooks for preprocessing the set of all tests, for postprocessing each test, and for aborting the test suite with a TAP "Bail out!" notice.
@@ -28,7 +32,7 @@ npm install tapeo --save-dev
 
 - `-nN` - Runs only test number `N`
 - `-s` - Stops after the 1st test in which assertions fail
-- `-sN` - Stops after the Nth test in whish assertions fail
+- `-sN` - Stops after the Nth test in which assertions fail
 
 To use `tapeo`, the tests themselves must specify `test = require('tapeo')` until `tape` supports the hooks that `tapeo` provides.
 
