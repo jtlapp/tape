@@ -4,7 +4,7 @@
 
 ## IMPORTANT NOTICE
 
-I created this a few days ago as an extension of the [`tape` module](https://github.com/substack/tape), but I'm finding `tape` too fragile a dependency. I already have a much more robust implementation based on ['tap'](https://github.com/tapjs/node-tap) and will post it shortly as a new module.
+I created this a few days ago as an extension of the [`tape` module](https://github.com/substack/tape), but I'm finding `tape` too fragile a dependency. I already have a much more robust implementation based on [`tap`](https://github.com/tapjs/node-tap) and will post it shortly as a new module.
 
 ## Overview
 
