@@ -1,16 +1,16 @@
 # tapeo
 
-`tape`-based test harness with command line options and extra hooks
+`tape`-based test runner with command line options and extra hooks
 
 ## IMPORTANT NOTICE
 
-I created this a few days ago as an extension of the [`tape` module](https://github.com/substack/tape), but I'm finding `tape` too fragile a dependency. I already have a much more robust implementation based on [`tap`](https://github.com/tapjs/node-tap) and will post it shortly as a new module.
+This module only lived a few days before I decided that [`tape` module](https://github.com/substack/tape) was too fragile a dependency. The module is now defunct.
+
+My [`subtap`](https://github.com/jtlapp/subtap) tool replaces it. It was inspired by [`faucet`](https://github.com/substack/faucet) but written for [`tap`](https://github.com/tapjs/node-tap).
 
 ## Overview
 
 `tapeo` numbers all named tests and has a command line option for specifying the number of a test to run. There is also an option that halts testing after a specified number of failed tests. `tapeo` provides hooks for preprocessing the set of all tests, for postprocessing each test, and for aborting the test suite with a TAP "Bail out!" notice.
-
-*I'll also be providing a fork of [`faucet`](https://github.com/substack/faucet) that works with `tapeo`, assuming the `faucet` folks don't accept my tweaks.*
 
 ## Installation
 
