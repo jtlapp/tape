@@ -4,7 +4,7 @@
 
 ## IMPORTANT NOTICE
 
-This module only lived a few days before I decided that [`tape` module](https://github.com/substack/tape) was too fragile a dependency. The module is now defunct.
+This module only lived a few days before I decided that the [`tape`](https://github.com/substack/tape) module was too fragile a dependency. `tapeo` is now defunct.
 
 My [`subtap`](https://github.com/jtlapp/subtap) tool replaces it. It was inspired by [`faucet`](https://github.com/substack/faucet) but written for [`tap`](https://github.com/tapjs/node-tap).
 
